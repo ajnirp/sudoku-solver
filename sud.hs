@@ -4,20 +4,11 @@ import Data.Maybe
 
 type Board = [Int]
 
-sameRow :: Int -> Int -> Bool
 sameRow i j = div i 9 == div j 9
-
-sameCol :: Int -> Int -> Bool
 sameCol i j = mod (i - j) 9 == 0
-
-sameBlock :: Int -> Int -> Bool
 sameBlock i j = div i 27 == div j 27 && div (mod i 9) 3 == div (mod j 9) 3
 
-shouldExclude :: Int -> Int -> Bool
 shouldExclude i j = sameRow i j || sameCol i j || sameBlock i j
-
-removeIf :: (a -> Bool) -> [a] -> [a]
-removeIf pred = filter $ not . pred
 
 getExcluded :: Int -> Board -> [Int]
 getExcluded i board = nub $ map (board !!) $ filter (shouldExclude i) [0..80]
@@ -46,7 +37,7 @@ deadEnd :: Board -> Bool
 deadEnd b = (not . solved) b && (null . fromJust . next) b
 
 next' :: Board -> Maybe [Board]
-next' b = removeIf deadEnd <$> next b
+next' b = filter (not . deadEnd) <$> next b
 
 solve :: Board -> Maybe Board
 solve b | solved b = Just b
@@ -63,5 +54,9 @@ printBoard :: Board -> IO ()
 printBoard [] = return ()
 printBoard xs = print (take 9 xs) >> printBoard (drop 9 xs)
 
--- let b = fromStr "530070000600195000098000060800060003400803001700020006060000280000419005000080079"
--- (printBoard . fromJust . solve) b
+main :: IO ()
+main = do
+    s <- getLine
+    (printBoard . fromJust . solve . fromStr) s
+
+-- 530070000600195000098000060800060003400803001700020006060000280000419005000080079
