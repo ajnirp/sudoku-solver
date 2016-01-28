@@ -67,5 +67,3 @@ int main(int argc, const char const *argv[]) {
     fprintf(stderr, "where puzzle is an 81 character string representing the puzzle read left-to-right, top-to-bottom, and 0 is a blank\n");
     return 1;
 }
-
-// 530070000600195000098000060800060003400803001700020006060000280000419005000080079
