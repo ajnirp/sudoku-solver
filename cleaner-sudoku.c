@@ -17,7 +17,8 @@ char at(char board[82], int r, int c) { return board[r*9 + c]; }
 //
 // For example, if there is a 5 at row (2, 3) then
 // `find_disallowed(board, 2, 7, result)` will set `result[5]` to `false`.
-bool find_disallowed(char board[82], int r, int c, bool result[10]) {
+bool find_disallowed(char board[82], int i, bool result[10]) {
+    int r = i/9, c = i%9;
     for (int _r = 0; _r < 9; _r++) {
         result[at(board, _r, c) - '0'] = true;
     }
@@ -41,8 +42,7 @@ bool solved(char board[82]) {
     for (int i = 0; i < 81; i++) {
         for (int j = 0; j < 81; j++) {
             if (i == j) { continue; }
-            int r1 = i/9, c1 = i%9;
-            int r2 = j/9, c2 = j%9;
+            int r1 = i/9, c1 = i%9, r2 = j/9, c2 = j%9;
             if (r1 == r2 && board[i] == board[j]) { return false; }
             if (c1 == c2 && board[i] == board[j]) { return false; }
             if (same_box(i, j) && board[i] == board[j]) { return false; }
@@ -52,33 +52,29 @@ bool solved(char board[82]) {
 }
 
 // Backtracking helper function.
-bool helper(char board[82], int r, int c) {
-    if (r == 8 && c == 9) {
+bool helper(char board[82], int i) {
+    if (i == 82) {
         return true;
     }
-    if (c == 9) {
-        r += 1;
-        c = 0;
-    }
-    if (at(board, r, c) != '0') {
-        return helper(board, r, c+1);
+    if (board[i] != '0') {
+        return helper(board, i+1);
     }
     bool cant_use[10] = {false};
-    find_disallowed(board, r, c, cant_use);
+    find_disallowed(board, i, cant_use);
     for (char new = '1'; new <= '9'; new++) {
         if (!cant_use[new - '0']) {
-            board[r*9 + c] = new;
-            if (helper(board, r, c+1)) {
+            board[i] = new;
+            if (helper(board, i+1)) {
                 return true;
             }
-            board[r*9 + c] = '0';
+            board[i] = '0';
         }
     }
     return false;
 }
 
 // Driver function.
-bool solve(char board[82]) { return helper(board, 0, 0); }
+bool solve(char board[82]) { return helper(board, 0); }
 
 int main(int argc, [[maybe_unused]] char* argv[argc+1]) {
     const char* testcases[NUM_TESTCASES] = {
